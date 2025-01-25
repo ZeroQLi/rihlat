@@ -2,6 +2,7 @@ import streamlit as st
 import rihlat
 import tempfile
 import json
+from time import sleep
 
 if prompt := st.chat_input("Enter your question") or st.audio_input("Record your query"):
     # Display user message in chat message container
@@ -20,3 +21,5 @@ if prompt:
     # Display assistant response in chat message container
     with st.chat_message("assistant"):
         st.markdown(response)
+        rihlat.play_text(response, "sk_40ae4c9c3087c754dac0aa6f4d91983f40d06c355e225330")
+        

@@ -1,5 +1,8 @@
 import requests
 import base64
+from elevenlabs import play
+from elevenlabs.client import ElevenLabs
+
 
 def transcribe_audio(st_audio, api_key, language="english"):
     with open(st_audio, "rb") as audio_file:
@@ -36,3 +39,15 @@ def transcribe_audio(st_audio, api_key, language="english"):
         json=data
     )
     return response.json()["choices"][0]["message"]["content"]
+
+def play_text(rihlat_output, xi_api_key):
+    client = ElevenLabs(
+      api_key=xi_api_key, # Defaults to ELEVEN_API_KEY or ELEVENLABS_API_KEY
+    )
+
+    audio = client.generate(
+      text=rihlat_output,
+      voice="Hamid",
+      model="eleven_turbo_v2_5"
+    )
+    play(audio)
