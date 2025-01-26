@@ -3,7 +3,7 @@ import base64
 from elevenlabs import play
 from elevenlabs.client import ElevenLabs
 import streamlit as st
-from tools import GeocodingTool, GTFSCoordinatorTool, CurrentDateTime, TransitRoutingTool
+from tools import GeocodingTool, GTFSCoordinatorTool, CurrentDateTime, RoutesCoordinatorTool
 from langchain.agents import initialize_agent, AgentType, Tool
 from langchain_openai import ChatOpenAI
 
@@ -68,7 +68,7 @@ def send_to_llm(app_query):
             description="Fetches geocoding information from TomTom's API based on user inputs"
         ),
         Tool(
-            name="TransitRoutingTool",
+            name="RoutesCoordinatorTool",
             func=route_tool.run,
             description="Fetches route information from Bing Routes API based on user inputs",
         ),
