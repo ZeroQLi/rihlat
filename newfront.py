@@ -152,20 +152,18 @@ with st.container():
             avatar = "🧑" if msg["role"] == "user" else "🤖"
             timestamp = datetime.now().strftime("%H:%M:%S")
             st.markdown(f"""
-                <div style="margin: 1rem 0; padding: 1rem; 
-                            background: { '#444' if msg['role'] == 'user' else '#555' };
-                            border-radius: 15px;
-                            animation: fadeIn 0.5s ease-in;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 1.5em;">{avatar}</span>
-                        <div>
-                            <div style="color: #888; font-size: 0.8em;">{timestamp}</div>
-                            {msg["content"]}
+                    <div style="margin: 1rem 0; padding: 1rem; 
+                         background: { '#444' if msg['role'] == 'user' else '#555' };
+                        border-radius: 15px;
+                        animation: fadeIn 0.5s ease-in;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 1.5em;">{avatar}</span>
+                            <div>
+                                <div style="color: #888; font-size: 0.8em;">{timestamp}</div>
+                                {msg["content"]}
+                            </div>
                         </div>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        st.markdown('</div>', unsafe_allow_html=True)
+                    </div>""", unsafe_allow_html=True)
 
 # ===== INPUT PROCESSING =====
 st.markdown('<div class="sticky-input">', unsafe_allow_html=True)
