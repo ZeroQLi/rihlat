@@ -50,7 +50,7 @@ def send_to_llm(app_query):
     gtfs_tool = GTFSCoordinatorTool()
     geocode_tool = GeocodingTool()
     curr_dt_tool = CurrentDateTime()
-    route_tool = TransitRoutingTool()
+    route_tool = RoutesCoordinatorTool()
 
     # Initialize LLM with system message for proper query format
     llm = ChatOpenAI(
