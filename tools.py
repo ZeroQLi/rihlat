@@ -1,15 +1,16 @@
+import ast
+import json
 import requests
 import streamlit as st
 
 from datetime import datetime
-from typing import Optional, Type, Dict
+from typing import Optional, Type, Dict, List
 from agents import GTFSQueryAgent
 from langchain.tools import BaseTool
 from langchain_core.callbacks import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
-
 from pydantic import BaseModel, Field
 
 class GTFSCoordInput(BaseModel):
@@ -52,7 +53,6 @@ class GTFSCoordinatorTool(BaseTool):
             if run_manager:
                 await run_manager.on_tool_error(e)
             return f"Error: {str(e)}"
-
 
 class GeocodingInput(BaseModel):
     query: str = Field(description="Location to search for (e.g., 'Amsterdam')")
@@ -161,7 +161,108 @@ class CurrentDateTime(BaseTool):
         except Exception as e:
             return f"Error: {str(e)}"
 
+class RoutingInput(BaseModel):
+    origin: str = Field( description="The name of the origin location.")
+    destination: str = Field(description="The name of the destination location.")    
+    optimize: Optional[str] = Field(default="distance")
+    avoid: Optional[str] = Field(default=None)
+    distance_unit: Optional[str] = Field(default="km")
+    date_time: Optional[str] = Field(default=None)
+    max_solutions: Optional[int] = Field(default=1)
+    key: Optional[str] = Field(default=None)
+
+class TransitRoutingTool(BaseTool):
+    name: str = "transit_routing_tool"
+    description: str = (
+        "Calls the Bing Maps Routing API for public transit routes. "
+        "Provides optimized routes for origin and destination with travel preferences, focusing on public transit."
+    )
+    args_schema: Type[BaseModel] = RoutingInput
+    return_direct: bool = True
+
+    def _run(
+        self, 
+        origin: str,
+        destination: str,
+        optimize: Optional[str] = "time",
+        avoid: Optional[str] = None,
+        distance_unit: Optional[str] = "km",
+        date_time: Optional[str] = None,
+        max_solutions: Optional[int] = 1,
+        key: Optional[str] = None,
+        run_manager: Optional[CallbackManagerForToolRun] = None,
+    ) -> Dict:
+        try:
+            # Retrieve API key from secrets or input
+            api_key = key or st.secrets.get("BINGMAPS_KEY")
+            if not api_key:
+                return {"error": "API key is missing. Provide it in secrets or as an input parameter."}
+            
+            # API endpoint
+            base_url = "http://dev.virtualearth.net/REST/v1/Routes/transit"
+            
+            # Prepare request parameters
+            params = {
+                "waypoint.1": origin,
+                "waypoint.2": destination,
+                "optimize": optimize,
+                "avoid": avoid,
+                "distanceUnit": distance_unit,
+                "dateTime": date_time,
+                "maxSolutions": max_solutions,
+                "key": api_key,  
+            }
+
+            # Make the API call
+            response = requests.get(base_url, params={k: v for k, v in params.items() if v is not None})
+            if response.status_code != 200:
+                return {"error": f"API call failed with status code {response.status_code}: {response.text}"}
+
+            response = response.json()
+            itinerary_items = response['resourceSets'][0]['resources'][0]['routeLegs'][0]['itineraryItems']
+            
+            instructions = [item['instruction']['text'] for item in itinerary_items]
+
+            results = {
+                "start_coords": response['resourceSets'][0]['resources'][0]['routeLegs'][0]['actualStart'],
+                "end_coords": response['resourceSets'][0]['resources'][0]['routeLegs'][0]['actualEnd'],
+                "travelDistance": response['resourceSets'][0]['resources'][0]['travelDistance'],
+                "travelDuration": response['resourceSets'][0]['resources'][0]['travelDuration'],
+                "instructions": instructions
+            }
+
+            return results
+
+        except Exception as e:
+            return {"error": str(e)}
+
+    async def _arun(
+        self, 
+        origin: str,
+        destination: str,
+        optimize: Optional[str] = "time",
+        avoid: Optional[str] = None,
+        distance_unit: Optional[str] = "km",
+        date_time: Optional[str] = None,
+        max_solutions: Optional[int] = 1,
+        key: Optional[str] = None,
+        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
+    ) -> Dict:
+        # Use the synchronous `_run` method within `_arun` for async handling
+        return self._run(
+            origin, destination, optimize, avoid, distance_unit, date_time, max_solutions, key
+        )
+
+
 if __name__ == "__main__":
-    tool = GTFSCoordinatorTool()
-    response = tool._run()
+    transit_tool = TransitRoutingTool()
+    response = transit_tool.invoke(
+        {
+            "origin": "Dubai Mall",
+            "destination": "Palm Jumeirah",
+            "avoid": "tolls",
+        }
+    )
+    print(response)
+
 
