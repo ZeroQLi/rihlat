@@ -19,6 +19,7 @@ st.set_page_config(
 )
 
 # ===== GLOBAL STYLES =====
+
 st.markdown("""
     <style>
     /* Core app styling */
@@ -27,14 +28,14 @@ st.markdown("""
     
     /* Text styling */
     .stApp, .stChatMessage, .stTextInput, .stAudioInput, .stMarkdown {
-        color: grey !important;
-        font-family: 'Courier New', monospace !important;
+        color: white !important;
+        font-family: 'Poppins', sans-serif !important;
     }
     
     /* Title styling */
     h1 {
         color: #FDFEFF !important; 
-        font-family: 'Georgia', serif !important;
+        font-family: 'Poppins', sans-serif !important;
         text-align: center !important;
         margin: 20px 0 !important;
     }
@@ -44,9 +45,9 @@ st.markdown("""
     
     /* Chat bubbles */
     [data-testid="stChatMessage"] {background-color: #115C52 !important;}
-    
+
     /* Sidebar styling */
-    [data-testid="stSidebar"] {background-color: #141414!important; min-width: 250px; max-width: 250px;}
+    [data-testid="stSidebar"] {background-color: #141414!important; min-width: 350px; max-width: 350px;}
     .sidebar-title {
         display: flex; 
         align-items: center; 
@@ -55,7 +56,7 @@ st.markdown("""
         font-size: 3em; 
         font-weight: bold;
         color: #FDFEFF !important; 
-        font-family: 'Courier New', monospace !important;
+        font-family: 'Poppins', sans-serif !important;
         justify-content: flex-start;
         
     }
@@ -134,10 +135,9 @@ with st.sidebar:
     st.divider()
     
     st.markdown("""
-    <div style="color: #FFFFFF"; font-family: 'Courier New', monospace;>
+    <div style="color: #FFFFFF"; font-family: poppins;>
     <p>Rihlat is an AI assistant that can help you with bus routes.</p>
-    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
-    Created by: Overpass<br>
+    
     Source 
             (github.com/ZeroQLi/rihlat)
     </div>
@@ -149,7 +149,7 @@ with st.container():
     with st.container():
         st.markdown('<div class="message-container">', unsafe_allow_html=True)
         for msg in st.session_state.messages:
-            avatar = "🧑" if msg["role"] == "user" else "🤖"
+            avatar = "👨🏻‍💻" if msg["role"] == "user" else "⚛"
             timestamp = datetime.now().strftime("%H:%M:%S")
             st.markdown(f"""
                     <div style="margin: 1rem 0; padding: 1rem; 

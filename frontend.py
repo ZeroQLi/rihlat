@@ -37,9 +37,9 @@ st.markdown("""
 <style>
 .stMarkdown .title {
     font-family: 'Inter', sans-serif;
-    font-size: 50px;
+    font-size: 100px;
     text-align: center;
-    color: black;
+    color: blue;
 }
 </style>
 """, unsafe_allow_html=True)
