@@ -33,6 +33,17 @@ body { font-family: 'Roboto', sans-serif; }
 </style>
 """, unsafe_allow_html=True)
 
+st.markdown("""
+<style>
+.stMarkdown .title {
+    font-family: 'Inter', sans-serif;
+    font-size: 50px;
+    text-align: center;
+    color: black;
+}
+</style>
+""", unsafe_allow_html=True)
+
 st.sidebar.markdown('<div class="title">Rihlat</div>', unsafe_allow_html=True)
 
 if 'messages' not in st.session_state:
