@@ -27,8 +27,8 @@ st.markdown("""
     
     /* Text styling */
     .stApp, .stChatMessage, .stTextInput, .stAudioInput, .stMarkdown {
-        color: #FF5733 !important;
-        font-family: 'Arial' !important;
+        color: grey !important;
+        font-family: 'Courier New', monospace !important;
     }
     
     /* Title styling */
@@ -40,10 +40,10 @@ st.markdown("""
     }
     
     /* Button styling */
-    .stButton > button {color: #FFFFFF !important; background-color: #581845 !important;}
+    .stButton > button {color: #FFFFFF !important; background-color: black !important;}
     
     /* Chat bubbles */
-    [data-testid="stChatMessage"] {background-color: rgba(255, 255, 255, 0.9) !important;}
+    [data-testid="stChatMessage"] {background-color: #115C52 !important;}
     
     /* Sidebar styling */
     [data-testid="stSidebar"] {background-color: #141414!important; min-width: 250px; max-width: 250px;}
@@ -52,10 +52,12 @@ st.markdown("""
         align-items: center; 
         gap: 10px; 
         padding: 15px;
-        font-size: 1.5em; 
+        font-size: 3em; 
+        font-weight: bold;
         color: #FDFEFF !important; 
         font-family: 'Courier New', monospace !important;
-        justify-content: center;
+        justify-content: flex-start;
+        
     }
     </style>
 """, unsafe_allow_html=True)
@@ -121,29 +123,28 @@ def play_text(response, xi_api_key):
 with st.sidebar:
     st.markdown("""
         <div class="sidebar-title">
-            <span>Rihlat</span>
+            Rihlat
         </div>
     """, unsafe_allow_html=True)
     
     with st.expander("📜 History", expanded=True):
         for item in st.session_state.history[-5:]:
-            st.caption(f"• {item}")
+            st.caption(f"<span style='color: white;'>•{item}</span>", unsafe_allow_html=True)
     
     st.divider()
     
     st.markdown("""
-    <div style="color: #404040">
-    **ℹ️ About**<br>
-    Version: 1.0.0<br>
+    <div style="color: #FFFFFF"; font-family: 'Courier New', monospace;>
+    <p>Rihlat is an AI assistant that can help you with bus routes.</p>
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
     Created by: Overpass<br>
-    [Documentation](github.com/ZeroQLi/rihlat)
+    Source 
+            (github.com/ZeroQLi/rihlat)
     </div>
     """, unsafe_allow_html=True)
 
 # ===== MAIN CHAT CONTAINER =====
 with st.container():
-    st.markdown("<h1 style='text-align: center; margin-bottom: 2rem;'>Rihlat Bus Assistant</h1>", 
-                unsafe_allow_html=True)
     
     with st.container():
         st.markdown('<div class="message-container">', unsafe_allow_html=True)
