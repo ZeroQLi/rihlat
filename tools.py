@@ -1,9 +1,7 @@
-import os
-import pytz
 import requests
 import streamlit as st
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, Type, Dict
 from agents import GTFSQueryAgent
 from langchain.tools import BaseTool
@@ -134,98 +132,36 @@ class GeocodingTool(BaseTool):
             return self._run(query, lat, lon, radius, limit, countrySet, language, ext)
         except Exception as e:
             return {"error": str(e)}
-        
-class DateTimeInput(BaseModel):
-    operation: str = Field(description="The date/time operation to perform (e.g., 'current_time', 'add_time')")
-    date_str: Optional[str] = Field(default=None, description="The date string (e.g., '2025-01-26 14:30')")
-    time_str: Optional[str] = Field(default=None, description="Time string to perform operations on (e.g., '14:30')")
-    timezone: Optional[str] = Field(default="UTC", description="Timezone for the operation (e.g., 'UTC', 'US/Eastern')")
-    time_to_add: Optional[str] = Field(default=None, description="Time duration to add/subtract (e.g., '10 minutes', '2 hours')")
-    compare_time: Optional[str] = Field(default=None, description="Compare the given time to the current time (e.g., '14:30')")
-    date_format: Optional[str] = Field(default="%Y-%m-%d %H:%M:%S", description="Date format for input and output")
 
-class DateTimeTool(BaseTool):
-    name: str = "date_time_tool"
-    description: str = "Handles various date and time operations such as getting the current time, adding time, comparing times, and converting time zones."
-    args_schema: Type[BaseModel] = DateTimeInput
-    return_direct: bool = True
+class CurrentDateTime(BaseTool):
+    name: str = "curren_datetime"
+    description: str = "Provides the current date and time."
 
     def _run(
-        self,
-        operation: str,
-        date_str: Optional[str] = None,
-        time_str: Optional[str] = None,
-        timezone: Optional[str] = "UTC",
-        time_to_add: Optional[str] = None,
-        compare_time: Optional[str] = None,
-        date_format: Optional[str] = "%Y-%m-%d %H:%M:%S",
-        run_manager: Optional[CallbackManagerForToolRun] = None,
-    ) -> Dict:
+        self, query: Optional[str] = None, run_manager: Optional[object] = None
+    ) -> str:
+        """
+        Run the tool synchronously to fetch the current date and time.
+        """
         try:
-            tz = pytz.timezone(timezone)
-            current_time = datetime.now(tz)
-
-            if operation == "current_time":
-                # Get the current time in the specified timezone
-                return {"result": current_time.strftime(date_format)}
-            
-            elif operation == "add_time" and time_str and time_to_add:
-                # Add or subtract time from a given time string
-                time_obj = datetime.strptime(time_str, "%H:%M")
-                time_delta = self._parse_time_duration(time_to_add)
-                new_time = time_obj + time_delta
-                return {"result": new_time.strftime("%H:%M")}
-            
-            elif operation == "compare_time" and compare_time:
-                # Compare given time with current time
-                given_time = datetime.strptime(compare_time, "%H:%M")
-                time_diff = given_time - current_time.replace(hour=given_time.hour, minute=given_time.minute, second=0, microsecond=0)
-                return {"result": f"Time difference: {time_diff}"}
-
-            elif operation == "format_schedule_time" and time_str:
-                # Format given schedule time into a more readable format
-                time_obj = datetime.strptime(time_str, "%H:%M")
-                return {"result": f"Next bus/train at {time_obj.strftime('%I:%M %p')}"}
-
-            else:
-                return {"error": "Invalid operation or missing parameters"}
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            return f"The current date and time is: {current_time}"
         except Exception as e:
-            return {"error": str(e)}
-
-    def _parse_time_duration(self, time_str: str) -> timedelta:
-        """
-        Parse time duration string into timedelta (e.g., '10 minutes' or '2 hours').
-        """
-        time_units = {
-            "minute": 60,
-            "hour": 3600,
-            "day": 86400
-        }
-        
-        time_duration = 0
-        for unit in time_units:
-            if unit in time_str:
-                num = int(time_str.split()[0])
-                time_duration += num * time_units[unit]
-        
-        return timedelta(seconds=time_duration)
-
+            return f"Error: {str(e)}"
+    
     async def _arun(
-        self,
-        operation: str,
-        date_str: Optional[str] = None,
-        time_str: Optional[str] = None,
-        timezone: Optional[str] = "UTC",
-        time_to_add: Optional[str] = None,
-        compare_time: Optional[str] = None,
-        date_format: Optional[str] = "%Y-%m-%d %H:%M:%S",
-        run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
-    ) -> Dict:
-        # Implementing the async version of _run, which calls _run synchronously
-        return self._run(operation, date_str, time_str, timezone, time_to_add, compare_time, date_format)
+        self, query: Optional[str] = None, run_manager: Optional[object] = None
+    ) -> str:
+        """
+        Run the tool asynchronously to fetch the current date and time.
+        """
+        try:
+            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            return f"The current date and time is: {current_time}"
+        except Exception as e:
+            return f"Error: {str(e)}"
 
 if __name__ == "__main__":
     tool = GTFSCoordinatorTool()
-    response = tool._run(query="""Give me all unique short route names""")
-    print(response)
+    response = tool._run()
 

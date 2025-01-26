@@ -43,6 +43,10 @@ class GTFSQueryAgent:
                 2. Generate a valid SQL query using the `sqlite` dialect.
                 3. Do not include any Markdown formatting such as triple backticks (` ``` `) or tags like `sql` in the output.
                 4. Ensure the SQL query is syntactically correct and limited to {top_k} results unless otherwise specified by the user.
+                
+                Additional Information:
+                - Common Transit Names (E101, MGrn, etc.) can be found in the routes table -> route_short_name column
+                - Common Stop Names (Dubai Mall, MS, Dubai Studio City, etc.) can be found in the routes table -> route_long_name column
 
                 Use the following database schema information for `merged_gtfs.db`:
                 {table_info}
