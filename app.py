@@ -63,20 +63,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# ===== BUS ROUTE DATA =====
-# BUS_ROUTES = {
-#     "route 10": {
-#         "stations": ["Al Qouz", "Mall of Emirates", "Dubai Marina"],
-#         "next_arrival": "15 minutes",
-#         "location": [25.2048, 55.2708]
-#     },
-#     "route 15": {
-#         "stations": ["Deira", "Dubai Creek", "Bur Dubai"],
-#         "next_arrival": "22 minutes",
-#         "location": [25.2654, 55.2962]
-#     }
-# }
-
 # ===== SESSION STATE =====
 SESSION_DEFAULTS = {
     "messages": [],
@@ -88,37 +74,6 @@ SESSION_DEFAULTS = {
 for key, value in SESSION_DEFAULTS.items():
     if key not in st.session_state:
         st.session_state[key] = value
-
-# # ===== CORE FUNCTIONS =====
-# def get_bus_response(message):
-#     message = message.lower()
-    
-#     for route, details in BUS_ROUTES.items():
-#         if route in message:
-#             return f"Route {route.upper()}: Next arrival in {details['next_arrival']}. Stations: {', '.join(details['stations'])}"
-    
-#     if "route" in message:
-#         return "\n".join([f"{route.upper()}: {details['next_arrival']} - {', '.join(details['stations'])}" 
-#                         for route, details in BUS_ROUTES.items()])
-    
-#     if "help" in message or "info" in message:
-#         return "I can help you with bus routes in Dubai. Try asking 'When is route 10?' or 'Show routes'"
-    
-#     return "I didn't understand. Ask about specific bus routes or say 'help'."
-
-# def create_bus_map(location):
-#     m = folium.Map(location=location, zoom_start=12)
-#     folium.Marker(location, popup="Bus Location").add_to(m)
-#     return m
-
-# def play_text(response, xi_api_key):
-#     client = ElevenLabs(api_key=xi_api_key)
-#     audio = client.generate(
-#         text=response,
-#         voice="Hamid",
-#         model="eleven_turbo_v2"
-#     )
-#     play(audio)
 
 # ===== SIDEBAR CONTAINER =====
 with st.sidebar:
@@ -136,32 +91,14 @@ with st.sidebar:
     
     st.markdown("""
     <div style="color: #FFFFFF"; font-family: poppins;>
-    <p>Rihlat is an AI assistant that can help you with bus routes.</p>
+    <p>
+    Rihlat is an AI voice assistant that helps you answer questions about your local public transit network.
     
-    Source 
-            (github.com/ZeroQLi/rihlat)
+    </p>
+    
+    Source: https://github.com/ZeroQLi/rihlat
     </div>
     """, unsafe_allow_html=True)
-
-# ===== MAIN CHAT CONTAINER =====
-# with st.container():
-#     st.markdown('<div class="message-container">', unsafe_allow_html=True)
-#     for msg in st.session_state.messages:
-#         avatar = "🧑" if msg["role"] == "user" else "🤖"
-#         timestamp = datetime.now().strftime("%H:%M:%S")
-#         st.markdown(f"""
-#                 <div style="margin: 1rem 0; padding: 1rem; 
-#                      background: { '#444' if msg['role'] == 'user' else '#555' };
-#                     border-radius: 15px;
-#                     animation: fadeIn 0.5s ease-in;">
-#                     <div style="display: flex; align-items: center; gap: 10px;">
-#                         <span style="font-size: 1.5em;">{avatar}</span>
-#                         <div>
-#                             <div style="color: #FFFFF; font-size: 0.8em;">{timestamp}</div>
-#                             {msg["content"]}
-#                         </div>
-#                     </div>
-#                 </div>""", unsafe_allow_html=True)
 
 # ===== INPUT PROCESSING =====
 st.markdown('<div class="sticky-input">', unsafe_allow_html=True)
@@ -203,13 +140,6 @@ if submitted:
             with st.chat_message("assistant"):
                 st.write(response)
             rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
-            
-            # # Show map if location found
-            # map_location = next((details['location'] for route, details in BUS_ROUTES.items() 
-            #                    if route in text_input.lower()), None)
-            # if map_location:
-            #     bus_map = create_bus_map(map_location)
-            #     st_folium(bus_map, width='100%', height=400)
 
     st.session_state.input_key += 1
     st.rerun()
@@ -227,13 +157,6 @@ if st.session_state.audio_data:
                 st.session_state.messages.append({"role": "assistant", "content": response})
                 st.info()
                 rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
-                
-                # # Show map if location found
-                # map_location = next((details['location'] for route, details in BUS_ROUTES.items() 
-                #                    if route in transcription.lower()), None)
-                # if map_location:
-                #     bus_map = create_bus_map(map_location)
-                #     st_folium(bus_map, width='100%', height=400)
         
         st.session_state.audio_data = None
         st.rerun()
