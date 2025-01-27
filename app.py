@@ -93,7 +93,7 @@ with st.sidebar:
     <div style="color: #FFFFFF"; font-family: poppins;>
     <p>
     Rihlat is an AI voice assistant that helps you answer questions about your local public transit network.
-    
+
     </p>
     
     Source: https://github.com/ZeroQLi/rihlat
@@ -139,8 +139,8 @@ if submitted:
             st.session_state.messages.append({"role": "assistant", "content": response})
             with st.chat_message("assistant"):
                 st.write(response)
-            rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
-
+                rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
+    
     st.session_state.input_key += 1
     st.rerun()
 
@@ -155,12 +155,13 @@ if st.session_state.audio_data:
                 response = rihlat.transcribe_audio(f.name, st.secrets["SAMBANOVA_API_KEY"])
                 
                 st.session_state.messages.append({"role": "assistant", "content": response})
-                st.info()
-                rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
+                with st.chat_message("assistant"):
+                    st.write(response)
+                    rihlat.play_text(response, st.secrets["ELEVENLABS_KEY"])
+                
         
         st.session_state.audio_data = None
         st.rerun()
-    
     except Exception as e:
         st.error(f"Audio processing error: {str(e)}")
 
