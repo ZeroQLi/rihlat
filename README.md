@@ -37,5 +37,5 @@ ELEVENLABS_KEY = "YOUR_API_KEY"
 
 5. Run the streamlit app
 ```
-streamlit run app.py
+python -m streamlit run app.py
 ```
